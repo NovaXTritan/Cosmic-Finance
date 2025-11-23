@@ -1,0 +1,38 @@
+Account,Amount
+BALANCE SHEET,,
+Current Assets,450000
+Cash,120000
+Accounts Receivable,180000
+Inventory,150000
+Total Current Assets,450000
+,,
+Fixed Assets,550000
+Property Plant Equipment,550000
+Total Assets,1000000
+,,
+Current Liabilities,200000
+Accounts Payable,120000
+Short Term Debt,80000
+Total Current Liabilities,200000
+,,
+Long Term Debt,300000
+Total Liabilities,500000
+,,
+Shareholders Equity,500000
+Total Liabilities and Equity,1000000
+,,
+INCOME STATEMENT,,
+Revenue,2000000
+Cost of Goods Sold,1200000
+Gross Profit,800000
+,,
+Operating Expenses,400000
+Operating Income,400000
+,,
+Interest Expense,40000
+Net Income Before Tax,360000
+,,
+Income Tax,90000
+Net Income,270000
+,,
+EBITDA,450000

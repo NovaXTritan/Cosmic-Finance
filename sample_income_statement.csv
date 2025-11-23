@@ -1,0 +1,39 @@
+Item,Amount
+Company Name,Tech Innovations Inc.
+Period,FY 2023
+
+REVENUE,
+Product Sales,3500000
+Service Revenue,1500000
+Total Revenue,5000000
+
+COST OF GOODS SOLD,
+Direct Materials,1200000
+Direct Labor,800000
+Manufacturing Overhead,500000
+Total COGS,2500000
+
+GROSS PROFIT,2500000
+
+OPERATING EXPENSES,
+Sales and Marketing,600000
+Research and Development,400000
+General and Administrative,500000
+Depreciation and Amortization,100000
+Total Operating Expenses,1600000
+
+OPERATING INCOME (EBIT),900000
+
+OTHER INCOME/EXPENSES,
+Interest Income,20000
+Interest Expense,-80000
+Other Income,10000
+Total Other,−50000
+
+INCOME BEFORE TAX,850000
+
+Income Tax Expense,250000
+
+NET INCOME,600000
+
+Earnings Per Share (1M shares),0.60

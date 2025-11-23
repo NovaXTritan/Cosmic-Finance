@@ -1,0 +1,209 @@
+name: 🚀 CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18.x'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Backend Tests
+  backend-test:
+    name: 🐍 Backend Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-asyncio httpx
+          
+      - name: Run tests
+        run: |
+          cd backend
+          pytest tests/ -v --cov=app --cov-report=xml
+          
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./backend/coverage.xml
+          flags: backend
+
+  # Frontend Tests & Build
+  frontend-test:
+    name: ⚛️  Frontend Tests & Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+          
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+          
+      - name: Lint
+        run: |
+          cd frontend
+          npm run lint
+          
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
+          
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: frontend/.next
+
+  # Docker Build & Push
+  docker-build:
+    name: 🐳 Docker Build
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+          
+      - name: Build and push Backend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/cosmic-financials-backend:latest
+            ${{ secrets.DOCKER_USERNAME }}/cosmic-financials-backend:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cosmic-financials-backend:latest
+          cache-to: type=inline
+          
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/cosmic-financials-frontend:latest
+            ${{ secrets.DOCKER_USERNAME }}/cosmic-financials-frontend:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/cosmic-financials-frontend:latest
+          cache-to: type=inline
+
+  # Deploy to Production
+  deploy-production:
+    name: 🌐 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [docker-build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            cd /opt/cosmic-financials
+            git pull origin main
+            docker-compose pull
+            docker-compose up -d
+            docker system prune -af
+
+  # Vercel Deployment (Frontend Alternative)
+  deploy-vercel:
+    name: ▲ Deploy to Vercel
+    runs-on: ubuntu-latest
+    needs: [frontend-test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./frontend
+          vercel-args: '--prod'
+
+  # Security Scanning
+  security-scan:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Notification
+  notify:
+    name: 📢 Notify Status
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test, docker-build, deploy-production]
+    if: always()
+    
+    steps:
+      - name: Send notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            🌌 Cosmic Financials Deployment
+            Status: ${{ job.status }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        if: always()

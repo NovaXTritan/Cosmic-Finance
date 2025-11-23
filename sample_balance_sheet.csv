@@ -1,0 +1,40 @@
+Item,Amount
+Company Name,Tech Innovations Inc.
+Period,FY 2023
+
+ASSETS,
+Current Assets,
+Cash and Cash Equivalents,450000
+Accounts Receivable,320000
+Inventory,180000
+Prepaid Expenses,50000
+Total Current Assets,1000000
+
+Non-Current Assets,
+Property Plant and Equipment,800000
+Intangible Assets,200000
+Long-term Investments,300000
+Total Non-Current Assets,1300000
+
+TOTAL ASSETS,2300000
+
+LIABILITIES,
+Current Liabilities,
+Accounts Payable,250000
+Short-term Debt,150000
+Accrued Expenses,100000
+Total Current Liabilities,500000
+
+Non-Current Liabilities,
+Long-term Debt,400000
+Deferred Tax Liabilities,100000
+Total Non-Current Liabilities,500000
+
+TOTAL LIABILITIES,1000000
+
+EQUITY,
+Common Stock,500000
+Retained Earnings,800000
+Total Equity,1300000
+
+TOTAL LIABILITIES AND EQUITY,2300000

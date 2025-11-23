@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --font-space-grotesk: 'Space Grotesk', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: rgb(255, 255, 255);
+  background: #0a0a0f;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .glassmorphism {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .cosmic-card {
+    @apply bg-cosmic-surface/30 border border-cosmic-primary/20 backdrop-blur rounded-2xl p-6;
+  }
+  
+  .cosmic-card-hover {
+    @apply cosmic-card hover:border-cosmic-primary/50 hover:shadow-cosmic transition-all duration-300;
+  }
+  
+  .cosmic-button {
+    @apply px-6 py-3 rounded-xl bg-gradient-to-r from-cosmic-primary to-cosmic-secondary text-white font-medium hover:shadow-cosmic transition-all duration-300 hover:scale-105;
+  }
+  
+  .cosmic-input {
+    @apply w-full px-4 py-3 rounded-xl bg-cosmic-surface/50 border border-cosmic-primary/30 text-white placeholder-gray-500 focus:border-cosmic-primary focus:outline-none focus:ring-2 focus:ring-cosmic-primary/50 transition-all;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a2e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6366f1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8b5cf6;
+}
+
+/* Selection */
+::selection {
+  background: #6366f1;
+  color: white;
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Chart.js custom tooltip */
+.chartjs-tooltip {
+  @apply glassmorphism rounded-lg p-3 shadow-cosmic;
+}
+
+/* Cosmic Range Slider */
+.slider-cosmic {
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+  outline: none;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.slider-cosmic:hover {
+  opacity: 1;
+}
+
+.slider-cosmic::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+  transition: all 0.3s ease;
+}
+
+.slider-cosmic::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
+}
+
+.slider-cosmic::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.slider-cosmic::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
+}
+
+/* Cosmic animations */
+@keyframes cosmic-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes cosmic-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+  }
+}
+
+.animate-cosmic-pulse {
+  animation: cosmic-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-cosmic-glow {
+  animation: cosmic-glow 3s ease-in-out infinite;
+}
